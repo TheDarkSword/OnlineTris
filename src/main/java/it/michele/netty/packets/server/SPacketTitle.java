@@ -29,31 +29,33 @@ import java.nio.charset.Charset;
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class SPacketTitle implements Packet {
-    private PacketEnum type = PacketEnum.S_PACKET_STEP;
+    private PacketEnum type = PacketEnum.S_PACKET_TITLE;
 
-    private byte code;
     private String title;
+    private byte enabled;
 
     public SPacketTitle(){
 
     }
 
-    public SPacketTitle(byte code, String title){
-        this.code = code;
+    public SPacketTitle(String title, boolean enabled){
         this.title = title;
-    }
-
-    public byte getCode(){
-        return code;
+        if(enabled){
+            this.enabled = 1;
+        }
     }
 
     public String getTitle() {
         return title;
     }
 
+    public boolean isEnabled() {
+        return enabled == 1;
+    }
+
     @Override
     public void processPacket(ChannelHandlerContext ctx, NetworkHandler handler){
-        handler.processStep(this, ctx);
+        handler.processTitle(this, ctx);
     }
 
     @Override
@@ -61,16 +63,16 @@ public class SPacketTitle implements Packet {
         byte[] title = this.title.getBytes();
 
         out.writeInt(type.getId());
-        out.writeByte(code);
         out.writeInt(title.length);
         out.writeBytes(title);
+        out.writeByte(enabled);
     }
 
     @Override
     public Packet decode(ByteBuf buf){
-        code = buf.readByte();
         int titleLen = buf.readInt();
         title = buf.readCharSequence(titleLen, Charset.forName("UTF-8")).toString();
+        enabled = buf.readByte();
 
         return this;
     }

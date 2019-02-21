@@ -7,6 +7,7 @@ import it.michele.netty.packets.Packet;
 import it.michele.netty.packets.PacketEnum;
 
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 /**
  * Copyright © 2019 by Michele Giacalone
@@ -29,48 +30,62 @@ import java.nio.charset.Charset;
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class CPacketTitle implements Packet {
-    private PacketEnum type = PacketEnum.C_PACKET_STEP;
+    private PacketEnum type = PacketEnum.C_PACKET_TITLE;
 
-    private byte code;
+    private UUID uuid;
     private String title;
+    private byte enabled;
 
     public CPacketTitle(){
 
     }
 
-    public CPacketTitle(byte code, String title){
-        this.code = code;
+    public CPacketTitle(UUID uuid, String title, boolean enabled){
+        this.uuid = uuid;
         this.title = title;
+        if(enabled){
+            this.enabled = 1;
+        }
     }
 
-    public byte getCode(){
-        return code;
+    public UUID getUuid(){
+        return uuid;
     }
 
     public String getTitle() {
         return title;
     }
 
+    public boolean isEnabled(){
+        return enabled == 1;
+    }
+
     @Override
     public void processPacket(ChannelHandlerContext ctx, NetworkHandler handler){
-        handler.processStep(this, ctx);
+        handler.processTitle(this, ctx);
     }
 
     @Override
     public void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out){
         byte[] title = this.title.getBytes();
+        byte[] uuid = this.uuid.toString().getBytes();
 
         out.writeInt(type.getId());
-        out.writeByte(code);
+        out.writeInt(uuid.length);
+        out.writeBytes(uuid);
         out.writeInt(title.length);
         out.writeBytes(title);
+        out.writeByte(enabled);
     }
 
     @Override
     public Packet decode(ByteBuf buf){
-        code = buf.readByte();
+        Charset charset = Charset.forName("UTF-8");
+        int uuidLen = buf.readInt();
+        uuid = UUID.fromString(buf.readCharSequence(uuidLen, charset).toString());
         int titleLen = buf.readInt();
-        title = buf.readCharSequence(titleLen, Charset.forName("UTF-8")).toString();
+        title = buf.readCharSequence(titleLen, charset).toString();
+        enabled = buf.readByte();
 
         return this;
     }

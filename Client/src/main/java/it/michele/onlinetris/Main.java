@@ -11,6 +11,8 @@ import it.michele.netty.NettyNetworkHandler;
 import it.michele.netty.PacketDecoder;
 import it.michele.netty.PacketEncoder;
 
+import java.util.UUID;
+
 /**
  * Copyright © 2019 by Michele Giacalone
  * This file is part of OnlineTris.
@@ -34,7 +36,7 @@ import it.michele.netty.PacketEncoder;
 public class Main {
 
     public static final int PROTOCOL_VERSION = 1;
-    public static final byte ID = 2;
+    public static final UUID ID = UUID.randomUUID();
 
     public static void main(String... args){
         Game game = new Game("Title", 500, 500);

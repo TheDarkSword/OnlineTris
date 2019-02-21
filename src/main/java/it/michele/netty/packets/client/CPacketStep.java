@@ -7,6 +7,7 @@ import it.michele.netty.packets.Packet;
 import it.michele.netty.packets.PacketEnum;
 
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 /**
  * Copyright © 2019 by Michele Giacalone
@@ -31,20 +32,20 @@ import java.nio.charset.Charset;
 public class CPacketStep implements Packet {
     private PacketEnum type = PacketEnum.C_PACKET_STEP;
 
-    private byte code;
+    private UUID uuid;
     private int cell;
 
     public CPacketStep(){
 
     }
 
-    public CPacketStep(byte code, int cell){
-        this.code = code;
+    public CPacketStep(UUID uuid, int cell){
+        this.uuid = uuid;
         this.cell = cell;
     }
 
-    public byte getCode(){
-        return code;
+    public UUID getUuid(){
+        return uuid;
     }
 
     public int getCell() {
@@ -58,14 +59,18 @@ public class CPacketStep implements Packet {
 
     @Override
     public void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out){
+        byte[] uuid = this.uuid.toString().getBytes();
+
         out.writeInt(type.getId());
-        out.writeByte(code);
+        out.writeInt(uuid.length);
+        out.writeBytes(uuid);
         out.writeInt(cell);
     }
 
     @Override
     public Packet decode(ByteBuf buf){
-        code = buf.readByte();
+        int uuidLen = buf.readInt();
+        uuid = UUID.fromString(buf.readCharSequence(uuidLen, Charset.forName("UTF-8")).toString());
         cell = buf.readInt();
 
         return this;

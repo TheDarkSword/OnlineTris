@@ -4,20 +4,8 @@ import io.netty.channel.ChannelHandlerContext;
 import it.michele.netty.Client;
 import it.michele.netty.NetworkHandler;
 import it.michele.netty.packets.Packet;
-import it.michele.netty.packets.client.CPacketChangeTurn;
-import it.michele.netty.packets.client.CPacketHandshake;
-import it.michele.netty.packets.client.CPacketLogin;
-import it.michele.netty.packets.client.CPacketStep;
-import it.michele.netty.packets.server.SPacketChangeTurn;
-import it.michele.netty.packets.server.SPacketHandshake;
-import it.michele.netty.packets.server.SPacketLogin;
-import it.michele.netty.packets.server.SPacketStep;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import it.michele.netty.packets.client.*;
+import it.michele.netty.packets.server.*;
 
 /**
  * Copyright © 2019 by Michele Giacalone
@@ -40,8 +28,8 @@ import java.util.stream.Collectors;
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class ServerHandler implements NetworkHandler {
-    public static Client client1;
-    public static Client client2;
+    private static Client client1;
+    private static Client client2;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx){
@@ -65,15 +53,15 @@ public class ServerHandler implements NetworkHandler {
     public void processLogin(Packet packet, ChannelHandlerContext ctx){
         CPacketLogin in = (CPacketLogin) packet;
 
-        if(client1 != null && client1.getCode() == in.getCode() || client2 != null && client2.getCode() == in.getCode()){
+        if(client1 != null && client1.getUuid() == in.getUuid() || client2 != null && client2.getUuid() == in.getUuid()){
             ctx.writeAndFlush(new SPacketLogin(false));
             return;
         }
 
         if(client1 == null){
-            client1 = new Client(in.getCode(), in.getName(), ctx);
+            client1 = new Client(in.getUuid(), in.getName(), ctx);
         } else {
-            client2 = new Client(in.getCode(), in.getName(), ctx);
+            client2 = new Client(in.getUuid(), in.getName(), ctx);
         }
 
         ctx.writeAndFlush(new SPacketLogin(true));
@@ -83,9 +71,9 @@ public class ServerHandler implements NetworkHandler {
     public void processChangeTurn(Packet packet, ChannelHandlerContext ctx) {
         CPacketChangeTurn in = (CPacketChangeTurn) packet;
 
-        ctx.writeAndFlush(new SPacketChangeTurn(!in.getTurn()));
+        //ctx.writeAndFlush(new SPacketChangeTurn(!in.getTurn()));
 
-        if(client1.getCode() == in.getCode()) client2.getCtx().writeAndFlush(new SPacketChangeTurn(in.getTurn()));
+        if(client1.getUuid().equals(in.getUuid())) client2.getCtx().writeAndFlush(new SPacketChangeTurn(in.getTurn()));
         else client1.getCtx().writeAndFlush(new SPacketChangeTurn(in.getTurn()));
     }
 
@@ -93,22 +81,15 @@ public class ServerHandler implements NetworkHandler {
     public void processStep(Packet packet, ChannelHandlerContext ctx){
         CPacketStep in = (CPacketStep) packet;
 
-        if(client1.getCode() == in.getCode()) client2.getCtx().writeAndFlush(new SPacketStep(in.getCell()));
+        if(client1.getUuid().equals(in.getUuid())) client2.getCtx().writeAndFlush(new SPacketStep(in.getCell()));
         else client1.getCtx().writeAndFlush(new SPacketStep(in.getCell()));
     }
 
     @Override
     public void processTitle(Packet packet, ChannelHandlerContext ctx){
+        CPacketTitle in = (CPacketTitle) packet;
 
-    }
-
-    @Override
-    public void processActivation(Packet packet, ChannelHandlerContext ctx) {
-
-    }
-
-    @Override
-    public void processList(Packet packet, ChannelHandlerContext ctx) {
-
+        if(client1.getUuid().equals(in.getUuid())) client2.getCtx().writeAndFlush(new SPacketTitle(in.getTitle(), in.isEnabled()));
+        else client1.getCtx().writeAndFlush(new SPacketTitle(in.getTitle(), in.isEnabled()));
     }
 }

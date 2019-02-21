@@ -7,6 +7,7 @@ import it.michele.netty.packets.Packet;
 import it.michele.netty.packets.PacketEnum;
 
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 /**
  * Copyright © 2019 by Michele Giacalone
@@ -31,7 +32,7 @@ import java.nio.charset.Charset;
 public class CPacketLogin implements Packet {
     private PacketEnum type = PacketEnum.C_PACKET_LOGIN;
 
-    private byte code;
+    private UUID uuid;
     private String name;
     private int protocol;
 
@@ -39,14 +40,14 @@ public class CPacketLogin implements Packet {
 
     }
 
-    public CPacketLogin(byte code, String name, int protocol){
-        this.code = code;
+    public CPacketLogin(UUID uuid, String name, int protocol){
+        this.uuid = uuid;
         this.name = name;
         this.protocol = protocol;
     }
 
-    public byte getCode(){
-        return code;
+    public UUID getUuid(){
+        return uuid;
     }
 
     public String getName() {
@@ -65,9 +66,11 @@ public class CPacketLogin implements Packet {
     @Override
     public void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out){
         byte[] name = this.name.getBytes();
+        byte[] uuid = this.uuid.toString().getBytes();
 
         out.writeInt(type.getId());
-        out.writeByte(code);
+        out.writeInt(uuid.length);
+        out.writeBytes(uuid);
         out.writeInt(name.length);
         out.writeBytes(name);
         out.writeInt(protocol);
@@ -76,7 +79,8 @@ public class CPacketLogin implements Packet {
     @Override
     public Packet decode(ByteBuf buf){
         Charset charset = Charset.forName("UTF-8");
-        code = buf.readByte();
+        int uuidLen = buf.readInt();
+        uuid = UUID.fromString(buf.readCharSequence(uuidLen, charset).toString());
         int nameLen = buf.readInt();
         name = buf.readCharSequence(nameLen, charset).toString();
         protocol = buf.readInt();

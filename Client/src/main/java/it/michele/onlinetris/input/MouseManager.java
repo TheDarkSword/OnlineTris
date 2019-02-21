@@ -2,6 +2,7 @@ package it.michele.onlinetris.input;
 
 import it.michele.netty.packets.client.CPacketChangeTurn;
 import it.michele.netty.packets.client.CPacketStep;
+import it.michele.netty.packets.client.CPacketTitle;
 import it.michele.onlinetris.ClientHandler;
 import it.michele.onlinetris.Game;
 import it.michele.onlinetris.Main;
@@ -42,6 +43,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[0] == null) {
                 Game.cells[0] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 0));
                 checkForWin();
                 checkForEnemyWin();
@@ -52,6 +54,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[1] == null) {
                 Game.cells[1] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 1));
                 checkForWin();
                 checkForEnemyWin();
@@ -62,6 +65,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[2] == null) {
                 Game.cells[2] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 2));
                 checkForWin();
                 checkForEnemyWin();
@@ -72,6 +76,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[3] == null) {
                 Game.cells[3] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 3));
                 checkForWin();
                 checkForEnemyWin();
@@ -82,6 +87,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[4] == null) {
                 Game.cells[4] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 4));
                 checkForWin();
                 checkForEnemyWin();
@@ -92,6 +98,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[5] == null) {
                 Game.cells[5] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 5));
                 checkForWin();
                 checkForEnemyWin();
@@ -102,6 +109,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[6] == null) {
                 Game.cells[6] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 6));
                 checkForWin();
                 checkForEnemyWin();
@@ -112,6 +120,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[7] == null) {
                 Game.cells[7] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 7));
                 checkForWin();
                 checkForEnemyWin();
@@ -122,6 +131,7 @@ public class MouseManager extends MouseAdapter {
             if(Game.cells[8] == null) {
                 Game.cells[8] = Game.getFigure();
                 ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, Game.myTurn));
+                Game.myTurn = !Game.myTurn;
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 8));
                 checkForWin();
                 checkForEnemyWin();
@@ -152,6 +162,13 @@ public class MouseManager extends MouseAdapter {
         }
         if(Game.cells[3] == Game.getFigure() && Game.cells[4] == Game.getFigure() && Game.cells[5] == Game.getFigure()) Game.won = true;
         if(Game.cells[6] == Game.getFigure() && Game.cells[7] == Game.getFigure() && Game.cells[8] == Game.getFigure()) Game.won = true;
+
+        if(Game.won){
+            ClientHandler.ctx.writeAndFlush(new CPacketTitle(Main.ID, Game.LOSE_STRING, true));
+            ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
+            Game.titles.put(Game.WON_STRING, true);
+            Game.myTurn = false;
+        }
     }
 
     private void checkForEnemyWin(){
@@ -167,5 +184,12 @@ public class MouseManager extends MouseAdapter {
         }
         if(Game.cells[3] == Game.getEnemyFigure() && Game.cells[4] == Game.getEnemyFigure() && Game.cells[5] == Game.getEnemyFigure()) Game.enemyWon = true;
         if(Game.cells[6] == Game.getEnemyFigure() && Game.cells[7] == Game.getEnemyFigure() && Game.cells[8] == Game.getEnemyFigure()) Game.enemyWon = true;
+
+        if(Game.enemyWon){
+            ClientHandler.ctx.writeAndFlush(new CPacketTitle(Main.ID, Game.WON_STRING, true));
+            ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
+            Game.titles.put(Game.LOSE_STRING, true);
+            Game.myTurn = false;
+        }
     }
 }

@@ -36,8 +36,4 @@ public interface NetworkHandler {
     void processStep(Packet packet, ChannelHandlerContext ctx);
 
     void processTitle(Packet packet, ChannelHandlerContext ctx);
-
-    void processActivation(Packet packet, ChannelHandlerContext ctx);
-
-    void processList(Packet packet, ChannelHandlerContext ctx);
 }

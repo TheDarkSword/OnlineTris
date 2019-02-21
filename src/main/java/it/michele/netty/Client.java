@@ -2,6 +2,8 @@ package it.michele.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.UUID;
+
 /**
  * Copyright © 2019 by Michele Giacalone
  * This file is part of NettyLib.
@@ -24,7 +26,7 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class Client {
 
-    private byte code;
+    private UUID uuid;
     private String name;
     private boolean turn;
     private ChannelHandlerContext ctx;
@@ -33,8 +35,8 @@ public class Client {
 
     }
 
-    public Client(byte code, String name, ChannelHandlerContext ctx){
-        this.code = code;
+    public Client(UUID uuid, String name, ChannelHandlerContext ctx){
+        this.uuid = uuid;
         this.name = name;
         this.ctx = ctx;
     }
@@ -43,8 +45,8 @@ public class Client {
         this.turn = turn;
     }
 
-    public byte getCode() {
-        return code;
+    public UUID getUuid() {
+        return uuid;
     }
 
     public ChannelHandlerContext getCtx(){

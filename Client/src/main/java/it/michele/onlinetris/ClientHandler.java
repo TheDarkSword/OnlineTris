@@ -82,14 +82,6 @@ public class ClientHandler implements NetworkHandler {
     public void processTitle(Packet packet, ChannelHandlerContext ctx){
         SPacketTitle in = (SPacketTitle) packet;
 
-        
-    }
-
-    public void processActivation(Packet packet, ChannelHandlerContext ctx) {
-
-    }
-
-    public void processList(Packet packet, ChannelHandlerContext ctx){
-
+        Game.titles.put(in.getTitle(), in.isEnabled());
     }
 }

@@ -6,6 +6,9 @@ import it.michele.netty.NetworkHandler;
 import it.michele.netty.packets.Packet;
 import it.michele.netty.packets.PacketEnum;
 
+import java.nio.charset.Charset;
+import java.util.UUID;
+
 /**
  * Copyright © 2019 by Michele Giacalone
  * This file is part of OnlineTris.
@@ -30,14 +33,14 @@ public class CPacketChangeTurn implements Packet {
     private final PacketEnum type = PacketEnum.C_PACKET_CHANGE_TURN;
 
     private byte turn;
-    private byte code;
+    private UUID uuid;
 
     public CPacketChangeTurn(){
 
     }
 
-    public CPacketChangeTurn(byte code, boolean turn){
-        this.code = code;
+    public CPacketChangeTurn(UUID uuid, boolean turn){
+        this.uuid = uuid;
         if(turn){
             this.turn = 1;
         }
@@ -47,8 +50,8 @@ public class CPacketChangeTurn implements Packet {
         return turn == 1;
     }
 
-    public byte getCode(){
-        return code;
+    public UUID getUuid(){
+        return uuid;
     }
 
     @Override
@@ -58,14 +61,18 @@ public class CPacketChangeTurn implements Packet {
 
     @Override
     public void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out){
+        byte[] uuid = this.uuid.toString().getBytes();
+
         out.writeInt(type.getId());
-        out.writeByte(code);
+        out.writeInt(uuid.length);
+        out.writeBytes(uuid);
         out.writeByte(turn);
     }
 
     @Override
     public Packet decode(ByteBuf buf){
-        code = buf.readByte();
+        int uuidLen = buf.readInt();
+        uuid = UUID.fromString(buf.readCharSequence(uuidLen, Charset.forName("UTF-8")).toString());
         turn = buf.readByte();
         return this;
     }

@@ -33,10 +33,10 @@ import java.util.HashMap;
  */
 public class Game implements Runnable {
 
-    public Display display;
+    private Display display;
 
-    public int width, height;
-    public String title;
+    private int width, height;
+    private String title;
 
     private boolean running = false;
     private Thread thread;
@@ -55,9 +55,9 @@ public class Game implements Runnable {
 
     private String waitingString = "Aspettando un altro giocatore";
     //private String unableToCommunicateWithOpponentString = "Impossibile comunicare con il server.";
-    private String wonString = "Hai vinto!";
-    private String loseString = "Hai Perso!";
-    private String tieString = "Gioco finito in pareggio";
+    public static final String WON_STRING = "Hai vinto!";
+    public static final String LOSE_STRING = "Hai Perso!";
+    public static final String TIE_STRING = "Gioco finito in pareggio";
 
     public static HashMap<String, Boolean> titles = new HashMap<>();
     public static BufferedImage cells[] = new BufferedImage[9];
@@ -108,16 +108,15 @@ public class Game implements Runnable {
 
             for(String title : titles.keySet()){
                 if(titles.get(title)){
-                    graphics.setColor(Color.RED);
-                    graphics.setFont(largerFont);
+                    graphics.setColor(Color.MAGENTA);
+                    graphics.setFont(font);
                     Graphics2D graphics2D = (Graphics2D) graphics;
                     graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                     int stringWidth = graphics2D.getFontMetrics().stringWidth(title);
-                    graphics.drawString(title, 250 - stringWidth, 250);
+                    graphics.drawString(title, 250 - stringWidth / 2, 250);
                 }
             }
         }
-
         //End Drawing
 
         bufferStrategy.show();
@@ -150,14 +149,14 @@ public class Game implements Runnable {
         stop();
     }
 
-    public synchronized void start(){
+    private synchronized void start(){
         if(running) return;
         thread = new Thread(this);
         running = true;
         thread.start();
     }
 
-    public synchronized void stop(){
+    private synchronized void stop(){
         if(!running) return;
         try{
             thread.join();
