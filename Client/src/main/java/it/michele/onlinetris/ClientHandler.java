@@ -96,5 +96,8 @@ public class ClientHandler implements NetworkHandler {
         }
 
         Game.titles.clear();
+        Game.won = false;
+        Game.enemyWon = false;
+        Game.tie = false;
     }
 }

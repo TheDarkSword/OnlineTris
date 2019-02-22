@@ -6,9 +6,13 @@ import it.michele.netty.packets.client.CPacketTitle;
 import it.michele.onlinetris.ClientHandler;
 import it.michele.onlinetris.Game;
 import it.michele.onlinetris.Main;
+import it.michele.onlinetris.threads.RestartGame;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright © 2019 by Michele Giacalone
@@ -178,7 +182,10 @@ public class MouseManager extends MouseAdapter {
             Game.titles.put(Game.WON_STRING, true);
             Game.myTurn = false;
 
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
+            scheduler.schedule(new RestartGame(), 3, TimeUnit.SECONDS);
+            scheduler.shutdown();
         }
     }
 
@@ -201,6 +208,11 @@ public class MouseManager extends MouseAdapter {
             ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
             Game.titles.put(Game.LOSE_STRING, true);
             Game.myTurn = false;
+
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+            scheduler.schedule(new RestartGame(), 3, TimeUnit.SECONDS);
+            scheduler.shutdown();
         }
     }
 
@@ -215,5 +227,10 @@ public class MouseManager extends MouseAdapter {
         ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
         Game.titles.put(Game.TIE_STRING, true);
         Game.myTurn = false;
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.schedule(new RestartGame(), 3, TimeUnit.SECONDS);
+        scheduler.shutdown();
     }
 }

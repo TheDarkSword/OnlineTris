@@ -1,7 +1,9 @@
 package it.michele.onlinetris.threads;
 
 import it.michele.netty.packets.client.CPacketChangeTurn;
+import it.michele.netty.packets.client.CPacketRestart;
 import it.michele.onlinetris.ClientHandler;
+import it.michele.onlinetris.Game;
 import it.michele.onlinetris.Main;
 
 /**
@@ -32,6 +34,6 @@ public class RestartGame implements Runnable{
 
     @Override
     public void run(){
-
+        ClientHandler.ctx.writeAndFlush(new CPacketRestart(Main.ID));
     }
 }

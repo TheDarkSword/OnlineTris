@@ -97,7 +97,7 @@ public class ServerHandler implements NetworkHandler {
     public void processRestart(Packet packet, ChannelHandlerContext ctx){
         CPacketRestart in = (CPacketRestart) packet;
 
-        if(client1.getUuid().equals(in.getUuid())) client2.getCtx().writeAndFlush(new SPacketRestart());
-        else client1.getCtx().writeAndFlush(new SPacketRestart());
+        client2.getCtx().writeAndFlush(new SPacketRestart());
+        client1.getCtx().writeAndFlush(new SPacketRestart());
     }
 }
