@@ -8,6 +8,7 @@ import it.michele.netty.packets.client.CPacketLogin;
 import it.michele.netty.packets.server.*;
 import it.michele.onlinetris.gfx.Assets;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -83,5 +84,17 @@ public class ClientHandler implements NetworkHandler {
         SPacketTitle in = (SPacketTitle) packet;
 
         Game.titles.put(in.getTitle(), in.isEnabled());
+    }
+
+    @Override
+    public void processRestart(Packet packet, ChannelHandlerContext ctx){
+        SPacketRestart in = (SPacketRestart) packet;
+
+        Game.myTurn = true;
+        for(int i = 0; i < Game.cells.length; i++){
+            Game.cells[i] = null;
+        }
+
+        Game.titles.clear();
     }
 }

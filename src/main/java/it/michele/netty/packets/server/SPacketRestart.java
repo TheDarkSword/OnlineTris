@@ -1,12 +1,18 @@
-package it.michele.netty.packets;
+package it.michele.netty.packets.server;
 
-import it.michele.netty.packets.client.*;
-import it.michele.netty.packets.server.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import it.michele.netty.NetworkHandler;
+import it.michele.netty.packets.Packet;
+import it.michele.netty.packets.PacketEnum;
+
+import java.nio.charset.Charset;
+import java.util.UUID;
 
 /**
  * Copyright © 2019 by Michele Giacalone
- * This file is part of NettyLib.
- * NettyLib is under "The 3-Clause BSD License", you can find a copy <a href="https://opensource.org/licenses/BSD-3-Clause">here</a>.
+ * This file is part of OnlineTris.
+ * OnlineTris is under "The 3-Clause BSD License", you can find a copy <a href="https://opensource.org/licenses/BSD-3-Clause">here</a>.
  * <p>
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -23,45 +29,26 @@ import it.michele.netty.packets.server.*;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-public enum PacketEnum {
-    C_PACKET_HANDSHAKE(0x1, CPacketHandshake.class),
-    C_PACKET_LOGIN(0x2, CPacketLogin.class),
-    C_PACKET_CHANGE_TURN(0x3, CPacketChangeTurn.class),
-    C_PACKET_STEP(0x4, CPacketStep.class),
-    C_PACKET_TITLE(0x5, CPacketTitle.class),
-    C_PACKET_RESTART(0x6, CPacketRestart.class),
+public class SPacketRestart implements Packet {
+    private PacketEnum type = PacketEnum.S_PACKET_RESTART;
 
-    S_PACKET_HANDSHAKE(0x100, SPacketHandshake.class),
-    S_PACKET_LOGIN(0x101, SPacketLogin.class),
-    S_PACKET_CHANGE_TURN(0x102, SPacketChangeTurn.class),
-    S_PACKET_STEP(0x103, SPacketStep.class),
-    S_PACKET_TITLE(0x104, SPacketTitle.class),
-    S_PACKET_RESTART(0x105, SPacketRestart.class),
-    ;
+    public SPacketRestart(){
 
-    private int id;
-    private Class clazz;
-
-    PacketEnum(int id, Class clazz){
-        this.id = id;
-        this.clazz = clazz;
     }
 
-    public int getId() {
-        return id;
+    @Override
+    public void processPacket(ChannelHandlerContext ctx, NetworkHandler handler){
+        handler.processRestart(this, ctx);
     }
 
-    public Class getClazz() {
-        return clazz;
+    @Override
+    public void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out){
+        out.writeInt(type.getId());
     }
 
-    public static Class getClazz(int id){
-        for(PacketEnum packet : values()){
-            if(packet.getId() == id){
-                return packet.getClazz();
-            }
-        }
+    @Override
+    public Packet decode(ByteBuf buf){
 
-        return null;
+        return this;
     }
 }

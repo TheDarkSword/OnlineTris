@@ -64,6 +64,7 @@ public class Game implements Runnable {
     public static boolean myTurn = true;
     public static boolean won = false;
     public static boolean enemyWon = false;
+    public static boolean tie = false;
 
     public Game(String title, int width, int height){
         this.title = title;
@@ -149,14 +150,14 @@ public class Game implements Runnable {
         stop();
     }
 
-    private synchronized void start(){
+    public synchronized void start(){
         if(running) return;
         thread = new Thread(this);
         running = true;
         thread.start();
     }
 
-    private synchronized void stop(){
+    public synchronized void stop(){
         if(!running) return;
         try{
             thread.join();

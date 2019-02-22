@@ -47,6 +47,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 0));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 170, 0, 160, 160)){
@@ -58,6 +59,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 1));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 340, 0, 160, 160)){
@@ -69,6 +71,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 2));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 0, 170, 160, 160)){
@@ -80,6 +83,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 3));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 170, 170, 160, 160)){
@@ -91,6 +95,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 4));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 340, 170, 160, 160)){
@@ -102,6 +107,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 5));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 0, 340, 160, 160)){
@@ -113,6 +119,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 6));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 170, 340, 160, 160)){
@@ -124,6 +131,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 7));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         } else if(mouseOver(x, y, 340, 340, 160, 160)){
@@ -135,6 +143,7 @@ public class MouseManager extends MouseAdapter {
                 ClientHandler.ctx.writeAndFlush(new CPacketStep(Main.ID, 8));
                 checkForWin();
                 checkForEnemyWin();
+                checkForTie();
             }
 
         }
@@ -168,6 +177,8 @@ public class MouseManager extends MouseAdapter {
             ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
             Game.titles.put(Game.WON_STRING, true);
             Game.myTurn = false;
+
+
         }
     }
 
@@ -191,5 +202,18 @@ public class MouseManager extends MouseAdapter {
             Game.titles.put(Game.LOSE_STRING, true);
             Game.myTurn = false;
         }
+    }
+
+    private void checkForTie(){
+        if(Game.won || Game.enemyWon) return;
+        for (int i = 0; i < Game.cells.length; i++){
+            if(Game.cells[i] == null) return;
+        }
+
+        Game.tie = true;
+        ClientHandler.ctx.writeAndFlush(new CPacketTitle(Main.ID, Game.TIE_STRING, true));
+        ClientHandler.ctx.writeAndFlush(new CPacketChangeTurn(Main.ID, false));
+        Game.titles.put(Game.TIE_STRING, true);
+        Game.myTurn = false;
     }
 }
