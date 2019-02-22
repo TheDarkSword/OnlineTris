@@ -6,9 +6,6 @@ import it.michele.netty.NetworkHandler;
 import it.michele.netty.packets.Packet;
 import it.michele.netty.packets.PacketEnum;
 
-import java.nio.charset.Charset;
-import java.util.UUID;
-
 /**
  * Copyright © 2019 by Michele Giacalone
  * This file is part of OnlineTris.
